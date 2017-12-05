@@ -1,6 +1,19 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Box / OS
+VAGRANT_BOX = 'ubuntu/xenial64'
+# Memorable name for your
+VM_NAME = 'ubuntu-xenial64'
+# VM User
+VM_USER = 'ubuntu'
+
+# Host folder to sync
+HOST_PATH = 'D:\\project'
+
+# Where to sync to on Guest
+GUEST_PATH = '/home/' + VM_USER + '/Project'
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -12,7 +25,9 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = VAGRANT_BOX
+
+  config.vm.hostname = VM_NAME
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -24,6 +39,7 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "private_network", type: "dhcp"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -44,19 +60,26 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder HOST_PATH, GUEST_PATH
+
+  # Disable default Vagrant folder, use a unique path per project
+  config.vm.synced_folder '.', '/home/'+VM_USER+'', disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = VM_NAME
+
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = false
+ 
+    # Customize the amount of memory on the VM:
+    vb.memory = "2048"
+    vb.cpus = "2"
+  end
+  
   # View the documentation for the provider you are using for more
   # information on available options.
 
