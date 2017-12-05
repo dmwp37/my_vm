@@ -1,0 +1,65 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: false
+
+  #  vars_files:
+  #  - defaults/main.yml
+  vars:
+    - user: ubuntu
+    - ubuntu_apt_mirror: 'mirrors.aliyun.com' 
+
+  pre_tasks:
+    # - name: Update apt cache if needed.
+    #   apt: update_cache=yes cache_valid_time=3600
+    - name: Install python2 for Ansible
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      register: output
+      changed_when:
+        - output.stdout != ""
+        - output.stdout != "\r\n"
+    - name: Gathering Facts
+      setup:
+
+  roles:
+    - role: chusiang.switch-apt-mirror
+    - role: ANXS.build-essential
+ #   - role: abaez.docker
+
+  tasks:
+    - name: Install zsh and git
+      apt: name={{ item }} state=latest
+      with_items:
+        - git
+        - zsh
+        - ctags
+        - git-core
+
+    - name: config my env
+      become_user: "{{ user }}"
+      block:
+        - name: clean .vim and .shell
+          file: state=absent path=/home/{{ user }}/{{ item }}/
+          with_items:
+            - .vim
+            - .shell
+        - name: Clone zsh repo
+          git: repo=https://github.com/dmwp37/zsh-env.git
+               dest=/home/{{ user }}/.shell
+        - name: Clone vim repo
+          git: repo=https://github.com/dmwp37/dmwp37-vim-config.git
+               dest=/home/{{ user }}/.vim
+        - name: Clone home repo
+          git: repo=https://github.com/dmwp37/my-home.git
+               dest=/home/{{ user }}/.ansible/tmp/my-home
+        - name: clean .vim and .shell in config
+          file: state=absent path=/home/{{ user }}/.ansible/tmp/my-home/{{ item }}/
+          with_items:
+            - .vim
+            - .shell
+        - name: Copy my config files
+          command: "cp -af /home/{{ user }}/.ansible/tmp/my-home/. /home/{{ user }}/"
+
+    - name: Set zsh as default shell
+      user: name={{ user }} shell=/bin/zsh
+        
