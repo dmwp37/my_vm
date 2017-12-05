@@ -1,0 +1,7 @@
+---
+- hosts: all
+  vars:
+    - virtualbox_version: "5.2.2"
+  become: yes
+  roles:
+    - role: PeterMosmans.virtualbox-guest

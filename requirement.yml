@@ -3,3 +3,4 @@
 - src: ANXS.build-essential
 - src: chusiang.switch-apt-mirror
 - src: zzet.postgresql
+- src: PeterMosmans.virtualbox-guest

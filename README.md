@@ -13,3 +13,10 @@ To use the vagrant file, you will need to have done the following:
 Once all of that is done, you can simply type in `vagrant up`, and Vagrant will create a new VM, install the base box, and configure it.
 
 Once the new VM is up and running (after `vagrant up` is complete and you're back at the command prompt), you can log into it via SSH if you'd like by typing in `vagrant ssh`. Otherwise, the next steps are below.
+
+
+## install guest addtions
+
+```sh
+$  ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory vbox_addtions.yml -vvv 
+```
