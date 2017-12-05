@@ -24,6 +24,7 @@
   roles:
     - role: chusiang.switch-apt-mirror
     - role: ANXS.build-essential
+    - role: zzet.postgresql
  #   - role: abaez.docker
 
   tasks:
@@ -35,7 +36,15 @@
         - ctags
         - git-core
 
+    - stat: path=/home/{{ user }}/.vim/bundle/vimproc
+      register: configured
+      tags:
+        - home
+
     - name: config my env
+      tags:
+        - home
+      when: not configured.stat.isdir 
       become_user: "{{ user }}"
       block:
         - name: clean .vim and .shell
@@ -59,6 +68,7 @@
             - .shell
         - name: Copy my config files
           command: "cp -af /home/{{ user }}/.ansible/tmp/my-home/. /home/{{ user }}/"
+          ignore_errors: True
 
     - name: Set zsh as default shell
       user: name={{ user }} shell=/bin/zsh
