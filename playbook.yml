@@ -44,7 +44,7 @@
     - name: config my env
       tags:
         - home
-      when: not configured.stat.isdir 
+      when: configured.stat.isdir is not defined or not configured.stat.isdir 
       become_user: "{{ user }}"
       block:
         - name: clean .vim and .shell
